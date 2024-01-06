@@ -7,28 +7,30 @@ $metodo = $_SERVER['REQUEST_METHOD'];
 
 switch ($metodo) {
     case 'GET':
-        if(isset($_GET['cedula'])){
+        if (isset($_GET['cedula'])) {
             CrudPersona::buscar();
-        }else{
-            CrudPersona::listar();
+        } else {
+            if (isset($_GET['rolProyecto'])) {
+                CrudPersona::obtenerRolProyecto();
+            } else {
+                CrudPersona::listar();
+            }
         }
         break;
-        case 'POST':
-            if(isset($_POST['insertar'])){
-                CrudPersona::insertar();
-            }else{
-                CrudPersona::agregar();
-            }
-            break;
-            case 'PUT':
-                CrudPersona::actualizar();
-                break;
-                case 'DELETE':
-                    CrudPersona::eliminar();
-                    break;
+    case 'POST':
+        if (isset($_POST['insertar'])) {
+            CrudPersona::insertar();
+        } else {
+            CrudPersona::agregar();
+        }
+        break;
+    case 'PUT':
+        CrudPersona::actualizar();
+        break;
+    case 'DELETE':
+        CrudPersona::eliminar();
+        break;
     default:
         echo "realice una petición válida";
         break;
 }
-
-?>

@@ -6,20 +6,18 @@ $metodo = $_SERVER['REQUEST_METHOD'];
 
 switch ($metodo) {
     case 'GET':
-            CrudSprint::listar();
+        CrudSprint::listar($_GET['idProyecto']);
         break;
-        case 'POST':
-            CrudSprint::agregar();
-            break;
-            case 'PUT':
-                CrudSprint::actualizar();
-                break;
-                case 'DELETE':
-                    CrudSprint::eliminar();
-                    break;
+    case 'POST':
+        CrudSprint::agregar($_POST['idProyecto']);
+        break;
+    case 'DELETE':
+        $input = file_get_contents("php://input");
+        $data = json_decode($input, true);
+        $id = $data['idProyecto'];
+        CrudSprint::eliminar($id);
+        break;
     default:
         echo "realice una petición válida";
         break;
 }
-
-?>

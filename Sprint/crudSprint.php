@@ -1,12 +1,29 @@
 <?php
 
-include_once 'conexion.php';
+include_once '../conexion.php';
 
-class CrudPersona{
-    public static function listar(){
-        $idProyecto = $_GET['idProyecto'];
+class CrudSprint
+{
+    public static function obtenerCantidad($idProyecto)
+    {
 
-        $consulta = "SELECT * FROM sprints Where id_pro_per=?";
+        $consulta = "SELECT Count(*) FROM sprint WHERE idProyecto = ?";
+
+        try {
+            $conexion = Conexion::Conectar();
+            $resultado = $conexion->prepare($consulta);
+            $resultado->execute(array($idProyecto));
+            $count = $resultado->fetchColumn();
+            return $count;
+        } catch (\Throwable $th) {
+            echo null;
+        }
+    }
+
+    public static function listar($idProyecto)
+    {
+
+        $consulta = "SELECT * FROM sprint WHERE idProyecto = ?";
 
         try {
             $conexion = Conexion::Conectar();
@@ -17,57 +34,34 @@ class CrudPersona{
         } catch (\Throwable $th) {
             echo null;
         }
-
     }
 
-    public static function agregar(){
-        $numeroSprint= $_POST['numeroSprint'];
-        $fechaLimite = $_POST['fechaLimite'];
-        $idProyecto = $_POST['idProyecto'];
-
-        $consulta = "INSERT INTO sprints VALUES(0,?,?,?)";
-
+    public static function agregar($idProyecto)
+    {
+        $consulta = "INSERT INTO sprint VALUES(?,?)";
+        $cantidad = CrudSprint::obtenerCantidad($idProyecto)    +   1;
         try {
             $conexion = Conexion::Conectar();
             $resultado = $conexion->prepare($consulta);
-            $resultado->execute(array($numeroSprint,$fechaLimite,$idProyecto));
-            echo "true";
+            $resultado->execute(array($idProyecto, $cantidad));
         } catch (\Throwable $th) {
-            echo "false";
         }
     }
 
-    public static function actualizar(){
-        $idSprint = $_GET['idSprint'];
-        $numeroSprint= $_GET['numeroSprint'];
-        $fechaLimite = $_GET['fechaLimite'];
+    public static function eliminar($idProyecto)
+    {
 
-        $consulta = "UPDATE sprints SET numero_sprint=?,fecha_limite=? WHERE id_sprint=?";
+        $consulta = "DELETE FROM sprint WHERE idProyecto=? AND numeroSprint=?";
 
-        try {
-            $conexion = Conexion::Conectar();
-            $resultado = $conexion->prepare($consulta);
-            $resultado->execute(array($numeroSprint,$fechaLimite,$idSprint));
-            echo "true";
-        } catch (\Throwable $th) {
-            echo "false";
-        }
-    }
-
-    public static function eliminar(){
-        $id= $_GET['idSprint'];
-
-        $consulta = "DELETE FROM sprints WHERE id_sprint=?";
+        $cantidad = CrudSprint::obtenerCantidad($idProyecto);
 
         try {
             $conexion = Conexion::Conectar();
             $resultado = $conexion->prepare($consulta);
-            $resultado->execute(array($id));
-            echo "true";
+            $resultado->execute(array($idProyecto, $cantidad));
+            echo true;
         } catch (\Throwable $th) {
             echo "false";
         }
     }
 }
-
-?>

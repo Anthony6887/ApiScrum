@@ -2,8 +2,10 @@
 
 include_once '../conexion.php';
 
-class CrudPersona{
-    public static function listar(){
+class CrudPersona
+{
+    public static function listar()
+    {
 
         $idProyecto = $_GET['idProyecto'];
 
@@ -18,10 +20,28 @@ class CrudPersona{
         } catch (\Throwable $th) {
             echo null;
         }
-
     }
 
-    public static function buscar(){
+    public static function obtenerRolProyecto()
+    {
+        $participante = $_GET['participante'];
+        $idProyecto = $_GET['idProyecto'];
+
+        $consulta = "SELECT rol FROM participantes_proyectos WHERE proyecto=? AND participante=?";
+
+        try {
+            $conexion = Conexion::Conectar();
+            $resultado = $conexion->prepare($consulta);
+            $resultado->execute(array($idProyecto, $participante));
+            $datos = $resultado->fetchColumn();
+            echo json_encode($datos);
+        } catch (\Throwable $th) {
+            echo null;
+        }
+    }
+
+    public static function buscar()
+    {
         $cedula = $_GET['cedula'];
         $clave = $_GET['clave'];
 
@@ -30,7 +50,7 @@ class CrudPersona{
         try {
             $conexion = Conexion::Conectar();
             $resultado = $conexion->prepare($consulta);
-            $resultado->execute(array($cedula,$clave));
+            $resultado->execute(array($cedula, $clave));
             $datos = $resultado->fetchAll(PDO::FETCH_ASSOC);
             echo json_encode($datos);
         } catch (\Throwable $th) {
@@ -38,14 +58,15 @@ class CrudPersona{
         }
     }
 
-    public static function buscarCedula($cedula) {
+    public static function buscarCedula($cedula)
+    {
         $consulta = "SELECT Count(*) FROM personas WHERE cedula = ?";
-    
+
         try {
             $conexion = Conexion::Conectar();
             $resultado = $conexion->prepare($consulta);
             $resultado->execute(array($cedula));
-    
+
             $count = $resultado->fetchColumn();
             return $count !== 0;
         } catch (\Throwable $th) {
@@ -54,7 +75,8 @@ class CrudPersona{
         }
     }
 
-    public static function insertar(){
+    public static function insertar()
+    {
 
 
         $cedula = $_POST['cedula'];
@@ -66,7 +88,7 @@ class CrudPersona{
 
         $existe = CrudPersona::buscarCedula($cedula);
 
-        if($existe){
+        if ($existe) {
             echo "false";
             return;
         }
@@ -76,13 +98,14 @@ class CrudPersona{
         try {
             $conexion = Conexion::Conectar();
             $resultado = $conexion->prepare($consulta);
-            $resultado->execute(array($cedula,$nombre,$apellido,$fechaNacimiento,$clave));
+            $resultado->execute(array($cedula, $nombre, $apellido, $fechaNacimiento, $clave));
             echo "true";
         } catch (\Throwable $th) {
             echo "false";
         }
     }
-    public static function agregar(){
+    public static function agregar()
+    {
 
 
         $cedula = $_POST['cedula'];
@@ -90,7 +113,7 @@ class CrudPersona{
 
         $existe = CrudPersona::buscarCedula($cedula);
 
-        if(!$existe){
+        if (!$existe) {
             echo "false";
             return;
         }
@@ -100,14 +123,15 @@ class CrudPersona{
         try {
             $conexion = Conexion::Conectar();
             $resultado = $conexion->prepare($consulta);
-            $resultado->execute(array($idProyecto,$cedula));
+            $resultado->execute(array($idProyecto, $cedula));
             echo "true";
         } catch (\Throwable $th) {
             echo "false";
         }
     }
 
-    public static function actualizar(){
+    public static function actualizar()
+    {
         $input = file_get_contents("php://input");
         $data = json_decode($input, true);
 
@@ -123,14 +147,15 @@ class CrudPersona{
         try {
             $conexion = Conexion::Conectar();
             $resultado = $conexion->prepare($consulta);
-            $resultado->execute(array($nombre,$apellido,$clave,$cedula));
+            $resultado->execute(array($nombre, $apellido, $clave, $cedula));
             echo "true";
         } catch (\Throwable $th) {
             echo "false";
         }
     }
 
-    public static function eliminar(){
+    public static function eliminar()
+    {
         $input = file_get_contents("php://input");
         $data = json_decode($input, true);
 
@@ -142,9 +167,9 @@ class CrudPersona{
             $conexion = Conexion::Conectar();
             $resultado = $conexion->prepare($consulta);
             $resultado->execute(array($cedula));
-            if ($resultado->rowCount() == 0){
+            if ($resultado->rowCount() == 0) {
                 echo "false";
-            }else{
+            } else {
                 echo "true";
             }
         } catch (\Throwable $th) {
@@ -152,5 +177,3 @@ class CrudPersona{
         }
     }
 }
-
-?>

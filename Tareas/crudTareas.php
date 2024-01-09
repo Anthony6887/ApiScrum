@@ -2,40 +2,45 @@
 
 include_once '../conexion.php';
 
-class crudTareas{
-    public static function listar(){
-        $consulta = "SELECT * FROM tareas Where proyecto=?";
-        $proyecto= $_GET['proyecto'];
+class crudTareas
+{
+    public static function listar()
+    {
+        $consulta = "SELECT * FROM tareas Where proyecto=? AND sprint=?";
+        $proyecto = $_GET['proyecto'];
+        $sprint = $_GET['sprint'];
         try {
             $conexion = Conexion::Conectar();
             $resultado = $conexion->prepare($consulta);
-            $resultado->execute(array($proyecto));
+            $resultado->execute(array($proyecto, $sprint));
             $datos = $resultado->fetchAll(PDO::FETCH_ASSOC);
             echo json_encode($datos);
         } catch (\Throwable $th) {
             echo null;
         }
-
     }
 
-    public static function agregar(){
+    public static function agregar()
+    {
         $nombre = $_POST['nombre'];
         $descripcion = $_POST['descripcion'];
         $idProyecto = $_POST['proyecto'];
+        $sprint = $_POST['sprint'];
 
-        $consulta = "INSERT INTO tareas VALUES(0,?,?,'','PENDIENTE',?)";
+        $consulta = "INSERT INTO tareas VALUES(0,?,?,'','PENDIENTE',?,?)";
 
         try {
             $conexion = Conexion::Conectar();
             $resultado = $conexion->prepare($consulta);
-            $resultado->execute(array($nombre,$descripcion,$idProyecto));
+            $resultado->execute(array($nombre, $descripcion, $idProyecto, $sprint));
             echo "true";
         } catch (\Throwable $th) {
             echo "false";
         }
     }
 
-    public static function actualizarProgreso(){
+    public static function actualizarProgreso()
+    {
         $input = file_get_contents("php://input");
         $data = json_decode($input, true);
 
@@ -48,14 +53,15 @@ class crudTareas{
         try {
             $conexion = Conexion::Conectar();
             $resultado = $conexion->prepare($consulta);
-            $resultado->execute(array($encargado,$estado,$idTarea));
+            $resultado->execute(array($encargado, $estado, $idTarea));
             echo "true";
         } catch (\Throwable $th) {
             echo "false";
         }
     }
 
-    public static function actualizarFinalizar(){
+    public static function actualizarFinalizar()
+    {
         $input = file_get_contents("php://input");
         $data = json_decode($input, true);
 
@@ -67,14 +73,15 @@ class crudTareas{
         try {
             $conexion = Conexion::Conectar();
             $resultado = $conexion->prepare($consulta);
-            $resultado->execute(array($estado,$idTarea));
+            $resultado->execute(array($estado, $idTarea));
             echo "true";
         } catch (\Throwable $th) {
             echo "false";
         }
     }
 
-    public static function eliminar(){
+    public static function eliminar()
+    {
         $input = file_get_contents("php://input");
         $data = json_decode($input, true);
 
@@ -86,9 +93,9 @@ class crudTareas{
             $conexion = Conexion::Conectar();
             $resultado = $conexion->prepare($consulta);
             $resultado->execute(array($id));
-            if ($resultado->rowCount() == 0){
+            if ($resultado->rowCount() == 0) {
                 echo "false";
-            }else{
+            } else {
                 echo "true";
             }
         } catch (\Throwable $th) {
@@ -96,5 +103,3 @@ class crudTareas{
         }
     }
 }
-
-?>
